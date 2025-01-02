@@ -22,13 +22,18 @@ public class UserManager {
     }
 
     /**
-     * Получение или создание UUID для пользователя.
+     * Создание нового пользователя.
      *
      * @param username Имя пользователя.
-     * @return UUID пользователя.
+     * @return UUID пользователя, если регистрация успешна.
+     * @throws IllegalArgumentException Если имя уже занято.
      */
-    public UUID getOrCreateUser(String username) {
-        UUID userId = users.computeIfAbsent(username, key -> UUID.randomUUID());
+    public UUID createUser(String username) {
+        if (users.containsKey(username)) {
+            throw new IllegalArgumentException("Имя уже занято. Выберите другое имя.");
+        }
+        UUID userId = UUID.randomUUID();
+        users.put(username, userId);
         saveUsers();
         return userId;
     }
@@ -44,7 +49,17 @@ public class UserManager {
     }
 
     /**
-     * Получение списка всех пользователей.
+     * Получение UUID пользователя по имени.
+     *
+     * @param username Имя пользователя.
+     * @return UUID пользователя.
+     */
+    public UUID getUserId(String username) {
+        return users.get(username);
+    }
+
+    /**
+     * Вывод списка всех пользователей и их UUID.
      */
     public void listUsers() {
         System.out.println("Список всех пользователей:");

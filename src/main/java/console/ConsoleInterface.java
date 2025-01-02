@@ -64,7 +64,7 @@ public class ConsoleInterface {
                     handleDelete();
                     break;
                 case "list_users":
-                    userManager.listUsers();
+                    handleListUsers();
                     break;
                 case "exit":
                     System.out.println("Выход из программы.");
@@ -76,24 +76,31 @@ public class ConsoleInterface {
     }
 
     private void handleFirstTime() {
-        System.out.println("Введите ваше имя для регистрации:");
-        String username = scanner.nextLine().trim();
-        this.currentUser = userManager.getOrCreateUser(username);
-        System.out.println("Регистрация завершена! Ваш UUID: " + currentUser);
+        while (true) {
+            System.out.println("Введите ваше имя для регистрации:");
+            String username = scanner.nextLine().trim();
+            try {
+                this.currentUser = userManager.createUser(username);
+                System.out.println("Регистрация завершена! Ваш UUID: " + currentUser);
+                break;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 
     private void handleReturningUser() {
-        System.out.println("Введите ваше имя:");
-        String username = scanner.nextLine().trim();
-
-        if (!userManager.userExists(username)) {
-            System.out.println("Пользователь не найден. Попробуйте снова.");
-            start(); // Рекурсия для возврата в начало
-            return;
+        while (true) {
+            System.out.println("Введите ваше имя:");
+            String username = scanner.nextLine().trim();
+            if (!userManager.userExists(username)) {
+                System.out.println("Пользователь не найден. Попробуйте снова.");
+            } else {
+                this.currentUser = userManager.getUserId(username);
+                System.out.println("Добро пожаловать обратно! Ваш UUID: " + currentUser);
+                break;
+            }
         }
-
-        this.currentUser = userManager.getOrCreateUser(username);
-        System.out.println("Добро пожаловать обратно! Ваш UUID: " + currentUser);
     }
 
     private void handleCreate() {
@@ -142,5 +149,10 @@ public class ConsoleInterface {
         } else {
             System.out.println("Ссылка не найдена.");
         }
+    }
+
+    private void handleListUsers() {
+        System.out.println("Список всех пользователей:");
+        userManager.listUsers();
     }
 }
