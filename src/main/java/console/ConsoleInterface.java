@@ -56,7 +56,7 @@ public class ConsoleInterface {
         }
 
         while (true) {
-            System.out.println("Введите команду (create, visit, stats, delete, list_users, update_clicks, exit):");
+            System.out.println("Введите команду (create, visit, stats, delete, update_clicks, my_links, exit):");
             String command = scanner.nextLine().trim();
 
             switch (command) {
@@ -72,11 +72,11 @@ public class ConsoleInterface {
                 case "delete":
                     handleDelete();
                     break;
-                case "list_users":
-                    handleListUsers();
-                    break;
                 case "update_clicks":
                     handleUpdateClicks();
+                    break;
+                case "my_links":
+                    handleMyLinks();
                     break;
                 case "exit":
                     System.out.println("Выход из программы.");
@@ -128,6 +128,19 @@ public class ConsoleInterface {
             }
         }
     }
+    private void handleMyLinks() {
+        System.out.println("Ваши созданные ссылки:");
+        linkShortener.getLinks().values().stream()
+                .filter(link -> link.getUserUi().equals(currentUser))
+                .forEach(link -> {
+                    System.out.println("Короткая ссылка: " + link.getShortLink());
+                    System.out.println("Оригинальная ссылка: " + link.getLongLink());
+                    System.out.println("Оставшиеся переходы: " + link.getClicksLeft());
+                    System.out.println("Срок действия до: " + link.getExpirationDate());
+                    System.out.println("---");
+                });
+    }
+
 
 
     private void handleCreate() {
@@ -203,10 +216,6 @@ public class ConsoleInterface {
     }
 
 
-    private void handleListUsers() {
-        System.out.println("Список всех пользователей:");
-        userManager.listUsers();
-    }
 
     private void handleUpdateClicks() {
         System.out.println("Введите короткую ссылку:");

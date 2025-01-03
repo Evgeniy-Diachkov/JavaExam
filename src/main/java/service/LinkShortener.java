@@ -38,7 +38,7 @@ public class LinkShortener {
      */
     public Link createShortLink(String longLink, UUID userUi, int userDefinedClicks, long userDefinedTimeSeconds) {
         UUID linkId = UUID.randomUUID();
-        String shortLink = "https://short.ly/" + linkId.toString().substring(0, 8);
+        String shortLink = "short.ly/" + linkId.toString().substring(0, 8);
 
         // Получаем максимальное количество переходов из конфигурации
         int maxConfigClicks = configManager.getMaxClicks();
