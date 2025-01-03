@@ -132,11 +132,28 @@ public class ConsoleInterface {
 
         try {
             String longLink = linkManager.processVisit(shortLink);
-            System.out.println("Переход выполнен. Оригинальная ссылка: " + longLink);
+            System.out.println("Переход выполнен. Открывается ссылка: " + longLink);
+
+            // Убедимся, что ссылка содержит протокол
+            if (!longLink.startsWith("http://") && !longLink.startsWith("https://")) {
+                longLink = "http://" + longLink; // Добавляем http, если протокол отсутствует
+            }
+
+            // Попытка открыть ссылку в браузере
+            if (java.awt.Desktop.isDesktopSupported()) {
+                java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+                desktop.browse(new java.net.URI(longLink));
+            } else {
+                System.out.println("Открытие браузера не поддерживается на этой платформе.");
+            }
         } catch (IllegalArgumentException e) {
             System.out.println("Ошибка: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Не удалось открыть браузер: " + e.getMessage());
         }
     }
+
+
 
     private void handleStats() {
         System.out.println("Введите короткую ссылку:");

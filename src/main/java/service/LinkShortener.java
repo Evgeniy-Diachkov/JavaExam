@@ -22,21 +22,30 @@ import java.util.UUID;
 public class LinkShortener {
     private final Map<UUID, Link> links = new HashMap<>();
     private final Gson gson;
-
+    private final ConfigManager configManager; // Экземпляр ConfigManager
     private final String filePath = "links.json";
 
     public LinkShortener() {
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
+        this.configManager = new ConfigManager(); // Создаем экземпляр ConfigManager
         loadLinks();
     }
 
-    public Link createShortLink(String longLink, UUID userUi, int clicks, long timeSeconds) {
+    /**
+     * Создание короткой ссылки.
+     */
+    public Link createShortLink(String longLink, UUID userUi, int clicks, long userDefinedTimeSeconds) {
         UUID linkId = UUID.randomUUID();
         String shortLink = "https://short.ly/" + linkId.toString().substring(0, 8);
 
-        LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(timeSeconds);
+        // Получаем максимальное время жизни из конфигурации
+        long maxConfigTimeSeconds = configManager.getMaxLinkTimeInSeconds();
+        // Определяем минимальное время жизни
+        long actualTimeSeconds = Math.min(userDefinedTimeSeconds, maxConfigTimeSeconds);
+
+        LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(actualTimeSeconds);
 
         Link link = Link.builder()
                 .longLink(longLink)
