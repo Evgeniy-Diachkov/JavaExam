@@ -27,9 +27,20 @@ public class ConfigManager {
             config = gson.fromJson(reader, HashMap.class);
         } catch (IOException e) {
             System.err.println("Ошибка загрузки конфигурации: " + e.getMessage());
-            config = new HashMap<>(); // Пустая конфигурация по умолчанию
+            config = new HashMap<>();
         }
     }
+
+    /**
+     * Получение значения максимального количества переходов.
+     *
+     * @return Максимальное количество переходов.
+     */
+    public int getMaxClicks() {
+        Object value = config.get("max_clicks");
+        return value != null ? ((Number) value).intValue() : 5; // Значение по умолчанию 5
+    }
+
 
     /**
      * Получение времени действия из конфигурации.

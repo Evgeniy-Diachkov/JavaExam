@@ -126,6 +126,7 @@ public class ConsoleInterface {
         System.out.println("Срок действия: до " + link.getExpirationDate());
     }
 
+
     private void handleVisit() {
         System.out.println("Введите короткую ссылку:");
         String shortLink = scanner.nextLine();
@@ -133,11 +134,6 @@ public class ConsoleInterface {
         try {
             String longLink = linkManager.processVisit(shortLink);
             System.out.println("Переход выполнен. Открывается ссылка: " + longLink);
-
-            // Убедимся, что ссылка содержит протокол
-            if (!longLink.startsWith("http://") && !longLink.startsWith("https://")) {
-                longLink = "http://" + longLink; // Добавляем http, если протокол отсутствует
-            }
 
             // Попытка открыть ссылку в браузере
             if (java.awt.Desktop.isDesktopSupported()) {
@@ -152,8 +148,6 @@ public class ConsoleInterface {
             System.out.println("Не удалось открыть браузер: " + e.getMessage());
         }
     }
-
-
 
     private void handleStats() {
         System.out.println("Введите короткую ссылку:");

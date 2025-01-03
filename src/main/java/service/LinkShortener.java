@@ -36,13 +36,17 @@ public class LinkShortener {
     /**
      * Создание короткой ссылки.
      */
-    public Link createShortLink(String longLink, UUID userUi, int clicks, long userDefinedTimeSeconds) {
+    public Link createShortLink(String longLink, UUID userUi, int userDefinedClicks, long userDefinedTimeSeconds) {
         UUID linkId = UUID.randomUUID();
         String shortLink = "https://short.ly/" + linkId.toString().substring(0, 8);
 
+        // Получаем максимальное количество переходов из конфигурации
+        int maxConfigClicks = configManager.getMaxClicks();
+        // Определяем максимальное количество переходов
+        int actualClicks = Math.max(userDefinedClicks, maxConfigClicks);
+
         // Получаем максимальное время жизни из конфигурации
         long maxConfigTimeSeconds = configManager.getMaxLinkTimeInSeconds();
-        // Определяем минимальное время жизни
         long actualTimeSeconds = Math.min(userDefinedTimeSeconds, maxConfigTimeSeconds);
 
         LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(actualTimeSeconds);
@@ -51,7 +55,7 @@ public class LinkShortener {
                 .longLink(longLink)
                 .shortLink(shortLink)
                 .userUi(userUi)
-                .clicksLeft(clicks)
+                .clicksLeft(actualClicks)
                 .expirationDate(expirationDate)
                 .id(linkId)
                 .build();
@@ -60,6 +64,7 @@ public class LinkShortener {
         saveLinks();
         return link;
     }
+
 
     public Map<UUID, Link> getLinks() {
         return links;
