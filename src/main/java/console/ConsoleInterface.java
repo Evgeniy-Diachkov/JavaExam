@@ -29,6 +29,15 @@ public class ConsoleInterface {
     }
 
     /**
+     * Получение экземпляра LinkShortener.
+     *
+     * @return Экземпляр LinkShortener.
+     */
+    public LinkShortener getLinkShortener() {
+        return linkShortener;
+    }
+
+    /**
      * Запуск интерфейса.
      */
     public void start() {
@@ -68,6 +77,7 @@ public class ConsoleInterface {
                     break;
                 case "exit":
                     System.out.println("Выход из программы.");
+                    linkShortener.cleanupLinks(); // Очистка протухших ссылок перед выходом
                     return;
                 default:
                     System.out.println("Неизвестная команда. Попробуйте снова.");
@@ -108,9 +118,12 @@ public class ConsoleInterface {
         String longLink = scanner.nextLine();
         System.out.println("Введите лимит переходов:");
         int clicks = Integer.parseInt(scanner.nextLine());
+        System.out.println("Введите желаемое время жизни ссылки (в секундах):");
+        long timeSeconds = Long.parseLong(scanner.nextLine());
 
-        Link link = linkShortener.createShortLink(longLink, currentUser, clicks);
+        Link link = linkShortener.createShortLink(longLink, currentUser, clicks, timeSeconds);
         System.out.println("Короткая ссылка создана: " + link.getShortLink());
+        System.out.println("Срок действия: до " + link.getExpirationDate());
     }
 
     private void handleVisit() {

@@ -2,12 +2,17 @@ package main;
 
 import console.ConsoleInterface;
 
-/**
- * Главный класс для запуска приложения.
- */
 public class Main {
     public static void main(String[] args) {
-        ConsoleInterface consoleInterface = new ConsoleInterface();
-        consoleInterface.start();
+        ConsoleInterface console = new ConsoleInterface();
+
+        // Очистка ссылок при завершении программы
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            console.getLinkShortener().cleanupLinks();
+            System.out.println("Ссылки успешно сохранены и очищены.");
+        }));
+
+        console.getLinkShortener().cleanupLinks(); // Очистка протухших ссылок
+        console.start();
     }
 }
