@@ -56,7 +56,7 @@ public class ConsoleInterface {
         }
 
         while (true) {
-            System.out.println("Введите команду (create, visit, stats, delete, list_users, exit):");
+            System.out.println("Введите команду (create, visit, stats, delete, list_users, update_clicks, exit):");
             String command = scanner.nextLine().trim();
 
             switch (command) {
@@ -74,6 +74,9 @@ public class ConsoleInterface {
                     break;
                 case "list_users":
                     handleListUsers();
+                    break;
+                case "update_clicks":
+                    handleUpdateClicks();
                     break;
                 case "exit":
                     System.out.println("Выход из программы.");
@@ -126,7 +129,6 @@ public class ConsoleInterface {
         System.out.println("Срок действия: до " + link.getExpirationDate());
     }
 
-
     private void handleVisit() {
         System.out.println("Введите короткую ссылку:");
         String shortLink = scanner.nextLine();
@@ -178,5 +180,21 @@ public class ConsoleInterface {
     private void handleListUsers() {
         System.out.println("Список всех пользователей:");
         userManager.listUsers();
+    }
+
+    private void handleUpdateClicks() {
+        System.out.println("Введите короткую ссылку:");
+        String shortLink = scanner.nextLine();
+
+        linkShortener.getLinks().values().stream()
+                .filter(link -> link.getShortLink().equals(shortLink))
+                .findFirst()
+                .ifPresentOrElse(link -> {
+                    System.out.println("Текущий лимит переходов: " + link.getClicksLeft());
+                    System.out.println("Введите новый лимит переходов:");
+                    int newClicks = Integer.parseInt(scanner.nextLine());
+                    link.setClicksLeft(newClicks);
+                    System.out.println("Лимит переходов обновлен до: " + newClicks);
+                }, () -> System.out.println("Ссылка не найдена."));
     }
 }
