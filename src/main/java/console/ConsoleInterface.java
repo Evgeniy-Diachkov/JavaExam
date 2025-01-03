@@ -169,13 +169,19 @@ public class ConsoleInterface {
         System.out.println("Введите короткую ссылку:");
         String shortLink = scanner.nextLine();
 
-        boolean isDeleted = linkShortener.getLinks().values().removeIf(link -> link.getShortLink().equals(shortLink));
-        if (isDeleted) {
-            System.out.println("Ссылка успешно удалена.");
-        } else {
-            System.out.println("Ссылка не найдена.");
-        }
+        linkShortener.getLinks().values().stream()
+                .filter(link -> link.getShortLink().equals(shortLink))
+                .findFirst()
+                .ifPresentOrElse(link -> {
+                    if (link.getUserUi().equals(currentUser)) {
+                        linkShortener.getLinks().remove(link.getId());
+                        System.out.println("Ссылка успешно удалена.");
+                    } else {
+                        System.out.println("Ошибка: вы не являетесь владельцем этой ссылки.");
+                    }
+                }, () -> System.out.println("Ссылка не найдена."));
     }
+
 
     private void handleListUsers() {
         System.out.println("Список всех пользователей:");
@@ -190,11 +196,16 @@ public class ConsoleInterface {
                 .filter(link -> link.getShortLink().equals(shortLink))
                 .findFirst()
                 .ifPresentOrElse(link -> {
-                    System.out.println("Текущий лимит переходов: " + link.getClicksLeft());
-                    System.out.println("Введите новый лимит переходов:");
-                    int newClicks = Integer.parseInt(scanner.nextLine());
-                    link.setClicksLeft(newClicks);
-                    System.out.println("Лимит переходов обновлен до: " + newClicks);
+                    if (link.getUserUi().equals(currentUser)) {
+                        System.out.println("Текущий лимит переходов: " + link.getClicksLeft());
+                        System.out.println("Введите новый лимит переходов:");
+                        int newClicks = Integer.parseInt(scanner.nextLine());
+                        link.setClicksLeft(newClicks);
+                        System.out.println("Лимит переходов обновлен до: " + newClicks);
+                    } else {
+                        System.out.println("Ошибка: вы не являетесь владельцем этой ссылки.");
+                    }
                 }, () -> System.out.println("Ссылка не найдена."));
     }
+
 }
