@@ -106,15 +106,29 @@ public class ConsoleInterface {
         while (true) {
             System.out.println("Введите ваше имя:");
             String username = scanner.nextLine().trim();
+            System.out.println("Введите ваш UUID:");
+            String uuidInput = scanner.nextLine().trim();
+
             if (!userManager.userExists(username)) {
                 System.out.println("Пользователь не найден. Попробуйте снова.");
             } else {
-                this.currentUser = userManager.getUserId(username);
-                System.out.println("Добро пожаловать обратно! Ваш UUID: " + currentUser);
-                break;
+                UUID storedUuid = userManager.getUserId(username);
+                try {
+                    UUID inputUuid = UUID.fromString(uuidInput);
+                    if (storedUuid.equals(inputUuid)) {
+                        this.currentUser = storedUuid;
+                        System.out.println("Добро пожаловать обратно! Ваш UUID подтвержден.");
+                        break;
+                    } else {
+                        System.out.println("Ошибка: UUID не соответствует имени пользователя. Попробуйте снова.");
+                    }
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Ошибка: Неверный формат UUID. Попробуйте снова.");
+                }
             }
         }
     }
+
 
     private void handleCreate() {
         System.out.println("Введите длинную ссылку:");
@@ -137,6 +151,11 @@ public class ConsoleInterface {
             String longLink = linkManager.processVisit(shortLink);
             System.out.println("Переход выполнен. Открывается ссылка: " + longLink);
 
+            // Убедимся, что ссылка содержит протокол
+            if (!longLink.startsWith("http://") && !longLink.startsWith("https://")) {
+                longLink = "http://" + longLink; // Добавляем http, если протокол отсутствует
+            }
+
             // Попытка открыть ссылку в браузере
             if (java.awt.Desktop.isDesktopSupported()) {
                 java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
@@ -150,6 +169,7 @@ public class ConsoleInterface {
             System.out.println("Не удалось открыть браузер: " + e.getMessage());
         }
     }
+
 
     private void handleStats() {
         System.out.println("Введите короткую ссылку:");
